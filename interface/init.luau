@@ -42,10 +42,10 @@ end
 local Window = Fluent:CreateWindow({
     Title = 'Angelwings',
     SubTitle = '',
-    TabWidth = 100,
+    TabWidth = 110,
     Size = UDim2.fromOffset(480, 360),
     Acrylic = false,
-    Theme = 'Dark',
+    Theme = 'Darker',
     MinimizeKey = Enum.KeyCode.End
 })
 
