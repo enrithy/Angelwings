@@ -6,31 +6,31 @@ local Config, Fetcher = {}, {}
 local Fluent = loadstring(game:HttpGet('https://raw.githubusercontent.com/enrithy/Angelwings/refs/heads/main/interface/shared/main.luau'))()
 
 local function save_config()
-    if not isfolder('Angelwings') then
-        makefolder('Angelwings')
+    if not isfolder('angelwings') then
+        makefolder('angelwings')
     end
 
-    if not isfolder(`Angelwings/configs`) then
-        makefolder(`Angelwings/configs`)
+    if not isfolder(`angelwings/configs`) then
+        makefolder(`angelwings/configs`)
     end
 
-    if not isfile(`Angelwings/configs/{game.PlaceId}.json`) then
-        writefile(`Angelwings/configs/{game.PlaceId}.json`, HttpService:JSONEncode({}))
+    if not isfile(`angelwings/configs/{game.GameId}.json`) then
+        writefile(`angelwings/configs/{game.GameId}.json`, HttpService:JSONEncode({}))
     end
 
     for index, value in pairs(Flags) do
         Config[index] = type(value) == 'table' and HttpService:JSONDecode(HttpService:JSONEncode(value)) or value
     end
 
-    writefile(`Angelwings/configs/{game.PlaceId}.json`, HttpService:JSONEncode(Config))
+    writefile(`angelwings/configs/{game.GameId}.json`, HttpService:JSONEncode(Config))
 end
 
 local function fetcher_config()
-    if not isfolder('Angelwings') or not isfile(`Angelwings/configs/{game.PlaceId}.json`) then
+    if not isfolder('angelwings') or not isfile(`angelwings/configs/{game.GameId}.json`) then
         save_config()
     end
 
-    Fetcher = HttpService:JSONDecode(readfile(`Angelwings/configs/{game.PlaceId}.json`))
+    Fetcher = HttpService:JSONDecode(readfile(`angelwings/configs/{game.GameId}.json`))
 
     for index, value in pairs(Fetcher) do
         Flags[index] = value
@@ -40,13 +40,31 @@ local function fetcher_config()
 end
 
 local Window = Fluent:CreateWindow({
-    Title = 'Angelwings',
+    Title = 'angelwings',
     SubTitle = '',
-    TabWidth = 110,
+    TabWidth = 115,
     Size = UDim2.fromOffset(480, 360),
     Acrylic = false,
     Theme = 'Darker',
-    MinimizeKey = Enum.KeyCode.End
+    MinimizeKey = (function()
+        local custom_key = getgenv().__KEYBIND
+
+        if not custom_key or custom_key == '' then
+            return Enum.KeyCode.End
+        end
+
+        local success, key = pcall(function()
+            return Enum.KeyCode[custom_key:gsub('%s+', ''):lower():gsub('(%a)(%w*)', function(a, b)
+                return a:upper()..b:lower()
+            end)]
+        end)
+
+        if success and key then
+            return key
+        end
+
+        return Enum.KeyCode.End
+    end)()
 })
 
 local mobile_button_ui = Instance.new('ImageButton')
