@@ -9,10 +9,6 @@ if not isfolder('Angelwings') then
     makefolder('Angelwings')
 end
 
-if not isfolder('Angelwings/utilities') then
-    makefolder('Angelwings/utilities')
-end
-
 if not isfolder(`Angelwings/configs`) then
     makefolder(`Angelwings/configs`)
 end
