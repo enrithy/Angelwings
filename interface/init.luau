@@ -3,34 +3,36 @@ local HttpService = cloneref(game:GetService('HttpService'))
 local Flags = {}
 local Config, Fetcher = {}, {}
 
-local Fluent = loadstring(game:HttpGet('https://raw.githubusercontent.com/enrithy/Angelwings/refs/heads/main/interface/shared/main.luau'))()
+local Fluent = loadstring(game:HttpGet('https://raw.githubusercontent.com/enrithy/smdfjdj/refs/heads/main/adada.lua'))()
 
 local function save_config()
-    if not isfolder('angelwings') then
-        makefolder('angelwings')
+    if not isfolder('Angelwings') then
+        makefolder('Angelwings')
     end
 
-    if not isfolder(`angelwings/configs`) then
-        makefolder(`angelwings/configs`)
+    if not isfolder(`Angelwings/configs`) then
+        makefolder(`Angelwings/configs`)
     end
 
-    if not isfile(`angelwings/configs/{game.GameId}.json`) then
-        writefile(`angelwings/configs/{game.GameId}.json`, HttpService:JSONEncode({}))
+    if not isfile(`Angelwings/configs/{game.GameId}.json`) then
+        writefile(`Angelwings/configs/{game.GameId}.json`, HttpService:JSONEncode({}))
     end
 
     for index, value in pairs(Flags) do
         Config[index] = type(value) == 'table' and HttpService:JSONDecode(HttpService:JSONEncode(value)) or value
     end
 
-    writefile(`angelwings/configs/{game.GameId}.json`, HttpService:JSONEncode(Config))
+    pcall(function()
+        writefile(`Angelwings/configs/{game.GameId}.json`, HttpService:JSONEncode(Config))
+    end)
 end
 
 local function fetcher_config()
-    if not isfolder('angelwings') or not isfile(`angelwings/configs/{game.GameId}.json`) then
+    if not isfolder('Angelwings') or not isfile(`Angelwings/configs/{game.GameId}.json`) then
         save_config()
     end
 
-    Fetcher = HttpService:JSONDecode(readfile(`angelwings/configs/{game.GameId}.json`))
+    Fetcher = HttpService:JSONDecode(readfile(`Angelwings/configs/{game.GameId}.json`))
 
     for index, value in pairs(Fetcher) do
         Flags[index] = value
@@ -40,62 +42,45 @@ local function fetcher_config()
 end
 
 local Window = Fluent:CreateWindow({
-    Title = 'angelwings',
+    Title = 'Angelwings',
     SubTitle = '',
-    TabWidth = 115,
-    Size = UDim2.fromOffset(480, 360),
+    TabWidth = 110,
+    Size = UDim2.fromOffset(500, 360),
     Acrylic = false,
     Theme = 'Darker',
-    MinimizeKey = (function()
-        local custom_key = getgenv().__KEYBIND
-
-        if not custom_key or custom_key == '' then
-            return Enum.KeyCode.End
-        end
-
-        local success, key = pcall(function()
-            return Enum.KeyCode[custom_key:gsub('%s+', ''):lower():gsub('(%a)(%w*)', function(a, b)
-                return a:upper()..b:lower()
-            end)]
-        end)
-
-        if success and key then
-            return key
-        end
-
-        return Enum.KeyCode.End
-    end)()
+    MinimizeKey = Enum.KeyCode.End
 })
 
-local mobile_button_ui = Instance.new('ImageButton')
-local mobile_hidden_gui = Instance.new('ScreenGui')
+if cloneref(game:GetService('UserInputService')).TouchEnabled then
+    local mobile_button_ui = Instance.new('ImageButton')
+    local mobile_hidden_gui = Instance.new('ScreenGui')
 
-mobile_hidden_gui.Enabled = cloneref(game:GetService('UserInputService')).TouchEnabled
-mobile_hidden_gui.Parent = cloneref(game:GetService('Players')).LocalPlayer.PlayerGui
-mobile_hidden_gui.ResetOnSpawn = false
+    mobile_hidden_gui.Parent = cloneref(game:GetService('Players')).LocalPlayer.PlayerGui
+    mobile_hidden_gui.ResetOnSpawn = false
 
-mobile_button_ui.Position = UDim2.new(0, 50, 0, 50)
-mobile_button_ui.Image = 'rbxassetid://10723346871'
-mobile_button_ui.Size = UDim2.new(0, 44, 0, 44)
-mobile_button_ui.Parent = mobile_hidden_gui
-mobile_button_ui.BackgroundTransparency = 1
-mobile_button_ui.Draggable = true
+    mobile_button_ui.Position = UDim2.new(0, 50, 0, 50)
+    mobile_button_ui.Image = 'rbxassetid://10723346871'
+    mobile_button_ui.Size = UDim2.new(0, 44, 0, 44)
+    mobile_button_ui.Parent = mobile_hidden_gui
+    mobile_button_ui.BackgroundTransparency = 1
+    mobile_button_ui.Draggable = true
 
-mobile_button_ui.MouseButton1Click:Connect(function()
-    Window:Minimize()
+    mobile_button_ui.MouseButton1Click:Connect(function()
+        Window:Minimize()
 
-    if Fluent.Window.Minimized then
-        mobile_button_ui.Image = 'rbxassetid://10723346959'
-    else
-        mobile_button_ui.Image = 'rbxassetid://10723346871'
-    end
-end)
+        if Fluent.Window.Minimized then
+            mobile_button_ui.Image = 'rbxassetid://10723346959'
+        else
+            mobile_button_ui.Image = 'rbxassetid://10723346871'
+        end
+    end)
 
-Fluent.GUI.AncestryChanged:Connect(function(_, parent)
-    if not parent then
-        mobile_hidden_gui:Destroy()
-    end
-end)
+    Fluent.GUI.AncestryChanged:Connect(function(_, parent)
+        if not parent then
+            mobile_hidden_gui:Destroy()
+        end
+    end)
+end
 
 Window.Flags = Flags
 
@@ -294,7 +279,7 @@ function Window:notify(index)
 end
 
 function Window:select_tab(index)
-    return Window:SelectTab(index)
+    return Window:SelectTab(index or 1)
 end
 
 return Window
