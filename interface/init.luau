@@ -3,21 +3,25 @@ local HttpService = cloneref(game:GetService('HttpService'))
 local Flags = {}
 local Config, Fetcher = {}, {}
 
-local Fluent = loadstring(game:HttpGet('https://raw.githubusercontent.com/enrithy/smdfjdj/refs/heads/main/adada.lua'))()
+local Fluent = loadstring(game:HttpGet('https://raw.githubusercontent.com/enrithy/Angelwings/refs/heads/main/interface/shared/main.luau'))()
+
+if not isfolder('Angelwings') then
+    makefolder('Angelwings')
+end
+
+if not isfolder('Angelwings/utilities') then
+    makefolder('Angelwings/utilities')
+end
+
+if not isfolder(`Angelwings/configs`) then
+    makefolder(`Angelwings/configs`)
+end
+
+if not isfile(`Angelwings/configs/{game.GameId}.json`) then
+    writefile(`Angelwings/configs/{game.GameId}.json`, HttpService:JSONEncode({}))
+end
 
 local function save_config()
-    if not isfolder('Angelwings') then
-        makefolder('Angelwings')
-    end
-
-    if not isfolder(`Angelwings/configs`) then
-        makefolder(`Angelwings/configs`)
-    end
-
-    if not isfile(`Angelwings/configs/{game.GameId}.json`) then
-        writefile(`Angelwings/configs/{game.GameId}.json`, HttpService:JSONEncode({}))
-    end
-
     for index, value in pairs(Flags) do
         Config[index] = type(value) == 'table' and HttpService:JSONDecode(HttpService:JSONEncode(value)) or value
     end
@@ -28,10 +32,6 @@ local function save_config()
 end
 
 local function fetcher_config()
-    if not isfolder('Angelwings') or not isfile(`Angelwings/configs/{game.GameId}.json`) then
-        save_config()
-    end
-
     Fetcher = HttpService:JSONDecode(readfile(`Angelwings/configs/{game.GameId}.json`))
 
     for index, value in pairs(Fetcher) do
