@@ -5,16 +5,16 @@ local Config, Fetcher = {}, {}
 
 local Fluent = loadstring(game:HttpGet('https://raw.githubusercontent.com/enrithy/Angelwings/refs/heads/main/interface/shared/main.luau'))()
 
-if not isfolder('Angelwings') then
-    makefolder('Angelwings')
+if not isfolder('angelwings') then
+    makefolder('angelwings')
 end
 
-if not isfolder(`Angelwings/configs`) then
-    makefolder(`Angelwings/configs`)
+if not isfolder(`angelwings/configs`) then
+    makefolder(`angelwings/configs`)
 end
 
-if not isfile(`Angelwings/configs/{game.GameId}.json`) then
-    writefile(`Angelwings/configs/{game.GameId}.json`, HttpService:JSONEncode({}))
+if not isfile(`angelwings/configs/{game.GameId}.json`) then
+    writefile(`angelwings/configs/{game.GameId}.json`, HttpService:JSONEncode({}))
 end
 
 local function save_config()
@@ -23,12 +23,12 @@ local function save_config()
     end
 
     pcall(function()
-        writefile(`Angelwings/configs/{game.GameId}.json`, HttpService:JSONEncode(Config))
+        writefile(`angelwings/configs/{game.GameId}.json`, HttpService:JSONEncode(Config))
     end)
 end
 
 local function fetcher_config()
-    Fetcher = HttpService:JSONDecode(readfile(`Angelwings/configs/{game.GameId}.json`))
+    Fetcher = HttpService:JSONDecode(readfile(`angelwings/configs/{game.GameId}.json`))
 
     for index, value in pairs(Fetcher) do
         Flags[index] = value
@@ -38,9 +38,9 @@ local function fetcher_config()
 end
 
 local Window = Fluent:CreateWindow({
-    Title = 'Angelwings',
+    Title = 'angelwings',
     SubTitle = '',
-    TabWidth = 110,
+    TabWidth = 107,
     Size = UDim2.fromOffset(500, 360),
     Acrylic = false,
     Theme = 'Darker',
@@ -132,13 +132,19 @@ local function create_signal(signal)
         toggle.default = fetcher_config()[toggle.flag] or Flags[toggle.flag]
         toggle.callback = callback(toggle.flag, toggle.callback)
 
-        return signal:AddToggle(connection, {
+        local INIT = signal:AddToggle(connection, {
             Title = toggle.title or '',
             Description = toggle.description or '',
             Default = toggle.default,
             flag = toggle.flag,
             Callback = toggle.callback
         })
+
+        function INIT:set_value(value)
+            INIT:SetValue(value)
+        end
+
+        return INIT
     end
 
     function signal:create_keybind(connection, keybind)
@@ -153,7 +159,7 @@ local function create_signal(signal)
 
         keybind.default = fetcher_config()[keybind.flag] or Flags[keybind.flag]
 
-        return signal:AddKeybind(connection, {
+        local INIT = signal:AddKeybind(connection, {
             Title = keybind.title or '',
             Description = keybind.description or '',
             Mode = keybind.mode or 'Toggle',
@@ -165,6 +171,12 @@ local function create_signal(signal)
                 save_config()
             end
         })
+
+        function INIT:set_value(value)
+            INIT:SetValue(value)
+        end
+
+        return INIT
     end
 
     function signal:create_dropdown(connection, dropdown)
@@ -188,7 +200,7 @@ local function create_signal(signal)
         dropdown.default = fetcher_config()[dropdown.flag] or Flags[dropdown.flag]
         dropdown.callback = callback(dropdown.flag, dropdown.callback)
 
-        return signal:AddDropdown(connection, {
+        local INIT = signal:AddDropdown(connection, {
             Title = dropdown.title or '',
             Description = dropdown.description or '',
             Values = dropdown.options,
@@ -197,6 +209,26 @@ local function create_signal(signal)
             flag = dropdown.flag,
             Callback = dropdown.callback
         })
+
+        function INIT:update_options(NEW)
+            if dropdown.multi then
+                Flags[dropdown.flag] = {}
+
+                for _, value in pairs(NEW) do
+                    Flags[dropdown.flag][value] = false
+                end
+
+                save_config()
+            end
+
+            INIT:SetValues(NEW)
+        end
+
+        function INIT:set_value(value)
+            INIT:SetValue(value)
+        end
+
+        return INIT
     end
 
     function signal:create_slider(connection, slider)
@@ -212,7 +244,7 @@ local function create_signal(signal)
         slider.default = fetcher_config()[slider.flag] or Flags[slider.flag]
         slider.callback = callback(slider.flag, slider.callback)
 
-        return signal:AddSlider(connection, {
+        local INIT = signal:AddSlider(connection, {
             Title = slider.title or '',
             Description = slider.description or '',
             Min = slider.min or 0,
@@ -222,6 +254,12 @@ local function create_signal(signal)
             flag = slider.flag,
             Callback = slider.callback
         })
+
+        function INIT:set_value(value)
+            INIT:SetValue(value)
+        end
+
+        return INIT
     end
 
     function signal:create_input(connection, input)
@@ -237,7 +275,7 @@ local function create_signal(signal)
         input.default = fetcher_config()[input.flag] or Flags[input.flag]
         input.callback = callback(input.flag, input.callback)
 
-        return signal:AddInput(connection, {
+        local INIT = signal:AddInput(connection, {
             Title = input.title or '',
             Description = input.description or '',
             Default = input.default,
@@ -247,6 +285,12 @@ local function create_signal(signal)
             flag = input.flag,
             Callback = input.callback
         })
+
+        function INIT:set_value(value)
+            INIT:SetValue(value)
+        end
+
+        return INIT
     end
 
     return signal
